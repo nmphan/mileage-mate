@@ -1,103 +1,120 @@
+"use client";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/app/components/ui/tabs"
+import { DashboardView } from "@/app/components/dashboard-view"
+// import { TripsView } from "@/app/trips/trips-view"
+// import { ExpensesView } from "@/app/expenses/expenses-view"
+
+
+// Import the useUserAuth hook
+import { useUserAuth } from "./_utils/auth-context";
+import Link from "next/link";
 import Image from "next/image";
+import Login from "./components/login";
+
 
 export default function Home() {
-  return (
-    <div className="grid grid-rows-[20px_1fr_20px] items-center justify-items-center min-h-screen p-8 pb-20 gap-16 sm:p-20 font-[family-name:var(--font-geist-sans)]">
-      <main className="flex flex-col gap-[32px] row-start-2 items-center sm:items-start">
-        <Image
-          className="dark:invert"
-          src="/next.svg"
-          alt="Next.js logo"
-          width={180}
-          height={38}
-          priority
-        />
-        <ol className="list-inside list-decimal text-sm/6 text-center sm:text-left font-[family-name:var(--font-geist-mono)]">
-          <li className="mb-2 tracking-[-.01em]">
-            Get started by editing{" "}
-            <code className="bg-black/[.05] dark:bg-white/[.06] px-1 py-0.5 rounded font-[family-name:var(--font-geist-mono)] font-semibold">
-              app/page.js
-            </code>
-            .
-          </li>
-          <li className="tracking-[-.01em]">
-            Save and see your changes instantly.
-          </li>
-        </ol>
+    // Use the useUserAuth hook to get the user object and the login and logout functions
+    const { user, gitHubSignIn, firebaseSignOut } = useUserAuth();
 
-        <div className="flex gap-4 items-center flex-col sm:flex-row">
-          <a
-            className="rounded-full border border-solid border-transparent transition-colors flex items-center justify-center bg-foreground text-background gap-2 hover:bg-[#383838] dark:hover:bg-[#ccc] font-medium text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5 sm:w-auto"
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <Image
-              className="dark:invert"
-              src="/vercel.svg"
-              alt="Vercel logomark"
-              width={20}
-              height={20}
-            />
-            Deploy now
-          </a>
-          <a
-            className="rounded-full border border-solid border-black/[.08] dark:border-white/[.145] transition-colors flex items-center justify-center hover:bg-[#f2f2f2] dark:hover:bg-[#1a1a1a] hover:border-transparent font-medium text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5 w-full sm:w-auto md:w-[158px]"
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Read our docs
-          </a>
+    // Async function to handle sign-in
+    const handleSignIn = async () => {
+      try {
+        await gitHubSignIn();
+      } catch (error) {
+        console.error("Error signing in:", error);
+      }
+    };
+  
+    // Async function to handle sign-out
+    const handleSignOut = async () => {
+      try {
+        await firebaseSignOut();
+      } catch (error) {
+        console.error("Error signing out:", error);
+      }
+    };
+
+  return (
+    <div className="min-h-screen bg-background">
+
+      <main className="container mx-auto px-4 py-6">
+      {user ? (
+        <div>
+          <p>{`Signed in as ${user.displayName} (${user.email})`}</p>
+
+          <button onClick={firebaseSignOut}>Sign Out</button>
+
+                
+        <h1 className="text-2xl font-bold mb-6">Millage Mate</h1>
+
+        <Tabs defaultValue="dashboard" className="w-full">
+          {/* <TabsList className="grid grid-cols-3 mb-8 w-full">
+            <TabsTrigger value="dashboard">Dashboard</TabsTrigger>
+            <TabsTrigger value="trips">Trips</TabsTrigger>
+            <TabsTrigger value="expenses">Expenses</TabsTrigger>
+          </TabsList> */}
+
+          <TabsContent value="dashboard">
+            <DashboardView />
+          </TabsContent>
+
+          {/* <TabsContent value="trips">
+            <TripsView />
+          </TabsContent>
+
+          <TabsContent value="expenses">
+            <ExpensesView />
+          </TabsContent> */}
+        </Tabs>
         </div>
+      ) : (
+        // <Login />
+        // <button onClick={gitHubSignIn}>Sign In with GitHub</button>
+         <div className="relative h-screen">
+              {/* Full-screen background image */}
+              <div className="fixed inset-0">
+                <Image
+                  src="/bg-image.jpg"
+                  alt="Background"
+                  fill
+                  className="object-cover"
+                  quality={100}
+                  priority
+                />
+                <div className="absolute inset-0 bg-black/30"></div> {/* Overlay for better text visibility */}
+              </div>
+        
+              {/* Sign-in button at top right */}
+              <div className="absolute top-4 right-4">
+                <button className="bg-black hover:bg-white hover:text-black text-white px-4 py-2 rounded-md transition-colors" onClick={gitHubSignIn}>
+                  Sign in with GitHub
+                </button>
+              </div>
+        
+              {/* Centered content */}
+              <div className="flex flex-col items-center justify-center min-h-screen text-center px-4">
+                <h1 className="text-4xl md:text-5xl font-bold text-white mb-6 drop-shadow-lg">
+                  Welcome to Millage Mate
+                </h1>
+                <p className="text-xl md:text-2xl text-white max-w-2xl mb-8 drop-shadow-lg italic">
+                  The journey of a thousand miles begins with a single step
+                </p>
+              </div>
+            </div>
+      )}
+
+      {/* {user ? (
+        <p>
+          <Link href="/week-10/shopping-list">
+            Continue to your Shopping List
+          </Link>
+        </p>
+      ) : (
+        <p></p>
+      )} */}
+
       </main>
-      <footer className="row-start-3 flex gap-[24px] flex-wrap items-center justify-center">
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/file.svg"
-            alt="File icon"
-            width={16}
-            height={16}
-          />
-          Learn
-        </a>
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/window.svg"
-            alt="Window icon"
-            width={16}
-            height={16}
-          />
-          Examples
-        </a>
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://nextjs.org?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/globe.svg"
-            alt="Globe icon"
-            width={16}
-            height={16}
-          />
-          Go to nextjs.org →
-        </a>
-      </footer>
     </div>
-  );
+  )
 }
+
