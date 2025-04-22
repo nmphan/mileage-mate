@@ -19,13 +19,12 @@ export default function NewTrip({ onAddTrip, onClose }) {
             tripDescription,
         };
         onAddTrip(newTrip);
-        // Reset form
         setTripDate("");
         setTripDistance("");
         setStartLocation("");
         setEndLocation("");
         setTripDescription("");
-        // Close modal if available
+        // Close the dialog if onClose is provided
         if (onClose) onClose();
     };
 

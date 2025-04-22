@@ -2,7 +2,7 @@
 import { Car } from "lucide-react";
 import { useEffect, useState } from "react";
 import { useUserAuth } from "../_utils/auth-context";
-import { getTrips, addTrip, loadTrips } from "../_services/trips-service";
+import { loadTrips } from "../_services/trips-service";
 
 export function RecentTrips() {
     const [trips, setTrips] = useState([]);
@@ -13,17 +13,6 @@ export function RecentTrips() {
         loadTrips(user.uid, setTrips);
       }
     }, [user?.uid]);
-
-    const handleAddTrip = async (newTrip) => {
-      if (!user) return;
-      
-      try {
-        await addTrip(user.uid, newTrip);
-        setTrips(prevTrips => [...prevTrips, newTrip]);
-      } catch (error) {
-        console.error("Failed to add trip:", error);
-      }
-    };
 
     return (
         <div className="rounded-lg bg-gradient-to-b from-gray-800 to-gray-700 shadow-sm">

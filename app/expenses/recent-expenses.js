@@ -1,39 +1,17 @@
 import { Receipt } from "lucide-react";
 import { useEffect, useState } from "react";
 import { useUserAuth } from "../_utils/auth-context";
-import { getExpenses, addExpense, loadExpenses } from "../_services/expenses-service";
+import { loadExpenses } from "../_services/expenses-service";
 
 export function RecentExpenses() {
   const [expenses, setExpenses] = useState([]);
   const { user } = useUserAuth();
-  const [totalExpenses, setTotalExpenses] = useState(0);
-
-  useEffect(() => {
-    const sum = expenses.reduce(
-      (sum, expense) => sum + parseFloat(expense.amount),
-      0
-    );
-    setTotalExpenses(sum);
-  }, [expenses]);
 
   useEffect(() => {
     if (user?.uid) {
       loadExpenses(user.uid, setExpenses);
     }
   }, [user?.uid]);
-
-  console.log(user?.uid);
-
-  const handleAddExpense = async (newExpense) => {
-    if (!user) return;
-    
-    try {
-      await addExpense(user.uid, newExpense);
-      setExpenses(prevExpenses => [...prevExpenses, newExpense]);
-    } catch (error) {
-      console.error("Failed to add expense:", error);
-    }
-  };
 
   return (
     <div className="rounded-lg bg-gradient-to-b from-gray-800 to-gray-700 shadow-sm">
