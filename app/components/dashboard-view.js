@@ -2,7 +2,7 @@ import { Car, MapPin } from "lucide-react";
 import { RecentTrips } from "@/app/trips/recent-trips";
 import { RecentExpenses } from "@/app/expenses/recent-expenses";
 import NewTrip from "../trips/new-trip";
-import { useEffect, useState } from "react";
+import { use, useEffect, useState } from "react";
 import { useUserAuth } from "../_utils/auth-context";
 import { getTrips, addTrip, loadTrips } from "../_services/trips-service";
 import NewExpense from "../expenses/new-expense";
@@ -17,9 +17,43 @@ export function DashboardView() {
   const [totalExpenses, setTotalExpenses] = useState(0);
   const [isTripDialogOpen, setIsTripDialogOpen] = useState(false);
   const [isExpenseDialogOpen, setIsExpenseDialogOpen] = useState(false);
+  const [totalTripsCount, setTotalTripsCount] = useState(0);
+  const [totalExpensesCount, setTotalExpensesCount] = useState(0);
 
-  const totalTripsCount = trips.length;
-  const totalExpensesCount = expenses.length;
+  useEffect(() => {
+    const currentMonth = new Date().getMonth();
+    const currentYear = new Date().getFullYear();
+
+    const totalTripsCount = trips.reduce((count, trip) => {
+      const tripDate = new Date(trip.tripDate);
+      return (
+        count +
+        (tripDate.getMonth() === currentMonth &&
+        tripDate.getFullYear() === currentYear
+          ? 1
+          : 0)
+      );
+    }, 0);
+    setTotalTripsCount(totalTripsCount);
+  }, [trips]);
+
+  useEffect(() => {
+    const currentMonth = new Date().getMonth();
+    const currentYear = new Date().getFullYear();
+
+    const totalExpensesCount = expenses.reduce((count, expense) => {
+      const expenseDate = new Date(expense.date);
+      return (
+        count +
+        (expenseDate.getMonth() === currentMonth &&
+        expenseDate.getFullYear() === currentYear
+          ? 1
+          : 0)
+      );
+    }, 0);
+
+    setTotalExpensesCount(totalExpensesCount);
+  }, [expenses]);
 
   useEffect(() => {
     const sum = trips.reduce(
@@ -87,7 +121,7 @@ export function DashboardView() {
               {totalMiles} mi
             </div>
             <p className="text-xs text-gray-400 mt-1">
-              {totalTripsCount} trips
+              {totalTripsCount} trips this month
             </p>
           </div>
         </div>
@@ -95,7 +129,9 @@ export function DashboardView() {
         {/* Total Expenses Card */}
         <div className="rounded-lg bg-gray-800 shadow-sm p-6">
           <div className="flex flex-row items-center justify-between pb-2">
-            <h3 className="text-lg font-semibold text-gray-300">Total Expenses</h3>
+            <h3 className="text-lg font-semibold text-gray-300">
+              Total Expenses
+            </h3>
             <MapPin className="h-4 w-4 text-gray-300" />
           </div>
           <div className="mt-2">
@@ -103,7 +139,7 @@ export function DashboardView() {
               $ {totalExpenses.toFixed(2)}
             </div>
             <p className="text-xs text-gray-400 mt-1">
-              {totalExpensesCount} expenses
+              {totalExpensesCount} expenses this month
             </p>
           </div>
         </div>
@@ -114,7 +150,7 @@ export function DashboardView() {
         <div className="p-6">
           <h2 className="text-lg font-semibold text-gray-300">Quick Actions</h2>
           <p className="text-sm text-gray-400">Add a trip or expense</p>
-          
+
           <div className="mt-4 flex flex-col sm:flex-row gap-4">
             {/* Add Trip Button */}
             <button
@@ -152,7 +188,10 @@ export function DashboardView() {
                   Enter the details of your trip below.
                 </p>
               </div>
-              <NewTrip onAddTrip={handleAddTrip} onClose={() => setIsTripDialogOpen(false)} />
+              <NewTrip
+                onAddTrip={handleAddTrip}
+                onClose={() => setIsTripDialogOpen(false)}
+              />
             </div>
           </div>
         </div>
@@ -169,7 +208,10 @@ export function DashboardView() {
                   Enter the details of your expense below.
                 </p>
               </div>
-              <NewExpense onAddExpense={handleAddExpense} onClose={() => setIsExpenseDialogOpen(false)} />
+              <NewExpense
+                onAddExpense={handleAddExpense}
+                onClose={() => setIsExpenseDialogOpen(false)}
+              />
             </div>
           </div>
         </div>
