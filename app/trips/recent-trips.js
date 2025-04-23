@@ -1,18 +1,10 @@
-"use client";
 import { Car } from "lucide-react";
-import { useEffect, useState } from "react";
-import { useUserAuth } from "../_utils/auth-context";
-import { loadTrips } from "../_services/trips-service";
 
-export function RecentTrips() {
-    const [trips, setTrips] = useState([]);
-    const { user } = useUserAuth();
+export function RecentTrips({trips}) {
   
-    useEffect(() => {
-      if (user?.uid) {
-        loadTrips(user.uid, setTrips);
-      }
-    }, [user?.uid]);
+    const recentTrips = trips
+    .sort((a,b) => new Date(b.tripDate) - new Date(a.tripDate))
+    .slice(0, 5); 
 
     return (
         <div className="rounded-lg bg-gradient-to-b from-gray-800 to-gray-700 shadow-sm">
@@ -23,7 +15,7 @@ export function RecentTrips() {
                 </div>
                 
                 <div className="space-y-4">
-                    {trips.map((trip) => (
+                    {recentTrips.map((trip) => (
                         <div 
                             key={trip.id} 
                             className="flex items-center justify-between border-b border-gray-600 pb-4 last:border-0 last:pb-0"

@@ -173,8 +173,8 @@ export function DashboardView() {
 
       {/* Recent Trips and Expenses */}
       <div className="grid gap-6 md:grid-cols-2">
-        <RecentTrips />
-        <RecentExpenses />
+        <RecentTrips trips={trips}/>
+        <RecentExpenses expenses={expenses}/>
       </div>
 
       {/* Trip Dialog */}

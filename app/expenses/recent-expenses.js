@@ -1,17 +1,10 @@
 import { Receipt } from "lucide-react";
-import { useEffect, useState } from "react";
-import { useUserAuth } from "../_utils/auth-context";
-import { loadExpenses } from "../_services/expenses-service";
 
-export function RecentExpenses() {
-  const [expenses, setExpenses] = useState([]);
-  const { user } = useUserAuth();
+export function RecentExpenses({expenses}) {
 
-  useEffect(() => {
-    if (user?.uid) {
-      loadExpenses(user.uid, setExpenses);
-    }
-  }, [user?.uid]);
+  const RecentExpenses = expenses
+  .sort((a,b) => new Date(b.date) - new Date(a.date))
+  .slice(0, 5); 
 
   return (
     <div className="rounded-lg bg-gradient-to-b from-gray-800 to-gray-700 shadow-sm">
@@ -22,7 +15,7 @@ export function RecentExpenses() {
         </div>
         
         <div className="space-y-4">
-          {expenses.map((expense) => (
+          {RecentExpenses.map((expense) => (
             <div 
               key={expense.id} 
               className="flex items-center justify-between border-b border-gray-600 pb-4 last:border-0 last:pb-0"
@@ -32,8 +25,8 @@ export function RecentExpenses() {
                   <Receipt className="h-4 w-4 text-red-500" />
                 </div>
                 <div>
-                  <h4 className="font-medium text-gray-300">{expense.description}</h4>
-                  <p className="text-sm text-gray-400">{expense.date}</p>
+                  <h4 className="font-medium text-gray-300">{expense.date}</h4>
+                  <p className="text-sm text-gray-400">{expense.description}</p>
                 </div>
               </div>
               <div className="text-right">
