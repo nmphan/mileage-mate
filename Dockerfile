@@ -1,36 +1,34 @@
-# Stage 1: Build the Next.js app
+# Stage 1: Build
 FROM node:18-alpine AS builder
-
 WORKDIR /app
 
-# Copy package files first (for caching)
-COPY package.json package-lock.json* ./
-RUN npm ci --omit=dev  # Install prod-only deps (no devDependencies)
+# Install dependencies (include devDependencies for build)
+COPY package.json package-lock.json ./
+RUN npm ci
 
-# Copy the rest of the app
+# Copy source files
 COPY . .
 
-# Build the app (outputs to `.next/`)
+# Set Node.js environment
+ENV NODE_ENV=production
+
+# Build the application
 RUN npm run build
 
-# Stage 2: Production-ready image
+# Stage 2: Production
 FROM node:18-alpine
-
 WORKDIR /app
 
-# Copy only necessary files from builder
+# Copy necessary files from builder
 COPY --from=builder /app/package.json .
 COPY --from=builder /app/package-lock.json .
 COPY --from=builder /app/.next ./.next
 COPY --from=builder /app/public ./public
 COPY --from=builder /app/node_modules ./node_modules
 
-# Set environment variables (adjust if needed)
+# Runtime configuration
 ENV NODE_ENV=production
-ENV PORT=8080
-
-# Expose port (Cloud Run overrides this automatically)
+ENV PORT 8080
 EXPOSE 8080
 
-# Start the app
 CMD ["npm", "start"]
