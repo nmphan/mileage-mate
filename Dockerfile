@@ -31,4 +31,5 @@ ENV NODE_ENV=production
 ENV PORT 8080
 EXPOSE 8080
 
-CMD ["npm", "start"]
+# CMD ["npm", "start"]
+CMD ["node", "node_modules/.bin/next", "start", "-H", "0.0.0.0", "-p", "8080"]
